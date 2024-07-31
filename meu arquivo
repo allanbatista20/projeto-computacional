@@ -1,0 +1,129 @@
+/*TODO:
+
+1 - TRATAR PARA NÃO MOVER PARA TRAS;
+2 - TRATAR PARA APARECER DO OUTRO LADA DA CANVAS CASO CHEGUE AO LIMITE;
+3 - TRATAR TAMNHO DAS COLUNAS NA CANVAS;
+4 - TRATAR INÍCIO DO JOGO APENAS AO INTERAGIR COM A TELA OU TER UMA TELA DE INÍCIO;
+5 - TRATAR TELA DE GAMEOVER;
+6 - TRATAR PONTUAÇÃO;
+7 - TESTAR ADD .SVG PARA COMIDA;
+8 - CORES EM DEGRADÊ;
+
+*/
+
+//variáveis globais para interface
+let cvs;
+let btnU;
+let btnR;
+let btnD;
+let btnL;
+
+//variáveis para o jogo em si
+let s;
+let scl = 20;
+let food;
+
+function setup() {
+  //tive que criar a canvas colocando as porcentagens no tamanho
+  //mais pra frente quero descobrir como fzr ela se encaixar na área de grid que tem.
+  
+  //1 - precisei colocar a canvas dentro de uma variável para posicionar ela dentro de uma div responsável pelo grid principal
+  cvs = createCanvas(windowWidth*0.9,windowHeight*0.6);
+  cvs.parent('organizador');
+  
+  //3 - Os botões foram colocados dentro de uma div que controla o grid do console
+  //criação dos botões
+  btnU = createButton('UP');
+  btnU.parent('buttons');
+  btnU.style('grid-area','up');
+  btnR = createButton('RIGHT');
+  btnR.parent('buttons');
+  btnR.style('grid-area','right');
+  btnD = createButton('DOWN');
+  btnD.parent('buttons');
+  btnD.style('grid-area','down');
+  btnL = createButton('LEFT');
+  btnL.parent('buttons');
+  btnL.style('grid-area','left');
+  
+  //jogo
+  s = new Snake();
+  frameRate(4);
+  pegarLocal();
+  
+  btnU.mousePressed(subir);
+  btnR.mousePressed(direita);
+  btnD.mousePressed(descer);
+  btnL.mousePressed(esquerda);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth*0.9,windowHeight*0.6);
+}
+
+function pegarLocal(){
+  var colunas = floor(width/scl);
+  var linhas = floor(height/scl);
+
+  food = createVector(floor(random(colunas)), floor(random(linhas)));
+  food.mult(scl);
+}
+
+function draw() {
+  background(20);
+  
+  if(s.comer(food)){
+    pegarLocal();
+  }
+
+  fill(255, 0, 100);
+  rect(food.x, food.y, scl, scl);
+
+
+  s.update();
+  s.mostrar();
+}
+
+function keyPressed(){
+  if(keyCode === UP_ARROW){
+    if(s.vy != 1){
+      s.dir(0, -1);
+    }
+  } else if(keyCode === DOWN_ARROW){
+    if(s.vy != -1){
+      s.dir(0, 1);
+    }
+  } else if(keyCode === RIGHT_ARROW){
+    if(s.vx != -1){
+      s.dir(1, 0);
+    }
+  } else if(keyCode === LEFT_ARROW){
+    if(s.vx != 1){
+      s.dir(-1, 0);
+    }
+  }
+}
+
+function subir(){
+  if(mouseIsPressed){
+    s.dir(0, -1);
+  }
+}
+
+function direita(){
+  if(mouseIsPressed){
+    s.dir(1, 0);
+  }
+}
+
+function descer(){
+  if(mouseIsPressed){
+    s.dir(0, 1);
+  }
+}
+
+function esquerda(){
+  if(mouseIsPressed){
+    s.dir(-1, 0);
+  }
+}
